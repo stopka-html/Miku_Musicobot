@@ -18,7 +18,13 @@ async def play_playlist(ctx):
         while list_of_playlists[ctx.guild.id]["url"]:
             
             i = list_of_playlists[ctx.guild.id]["url"].pop(0)
-            source = FFmpegPCMAudio(music_list.check_music(i))
+            if i not in music_list.music_list:
+                await ctx.send("Downloading...")
+                music_list.acess_await(i)
+                while i not in music_list.music_list:
+                    await asyncio.sleep(2)
+                await ctx.send("Downloaded!")
+            source = FFmpegPCMAudio(music_list.music_list[i]["filename"])
             embed = discord.Embed(title="Now playing <:a_anime_blush_cute_kawaii_uwu:1239615541216415837>", description=music_list.music_list[i]["name"], color=0x00FF00)
             await ctx.send(embed=embed)
             
@@ -30,7 +36,9 @@ async def play_playlist(ctx):
                 j += 1
                 if "skip" in list_of_playlists[ctx.guild.id] and list_of_playlists[ctx.guild.id]["skip"]:
                     list_of_playlists[ctx.guild.id]["skip"] = False
+                    list_of_playlists[ctx.guild.id]["voice"].stop()
                     break
+                    
                 if "pause" in list_of_playlists[ctx.guild.id] and list_of_playlists[ctx.guild.id]["pause"]:
                     print(j,"before")
                     j -= 1
@@ -58,7 +66,6 @@ async def play(ctx,url):
         asyncio.create_task(play_playlist(ctx))
     else:
         print("adding_to_playlist")
-        music_list.check_music(url)
         list_of_playlists[ctx.guild.id]["url"].append(url)
     
 # STOP sound and quit

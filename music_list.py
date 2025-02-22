@@ -1,10 +1,11 @@
 #load list of music from json
 import os
 import json
+import asyncio
 import yt_dlp as youtube_dl
 music_list = {}
 def load_list():
-    with open('auidos.json', 'a+') as f:
+    with open('auidos.json', 'r') as f:
         global music_list
         try:
             music_list = json.load(f)
@@ -15,8 +16,9 @@ def load_list():
         except FileExistsError:
             # directory already exists
             pass
-
-def check_music(url):
+def acess_await(url):
+    asyncio.create_task(check_music(url))
+async def check_music(url):
     
     if url in music_list:
         return music_list[url]["filename"]
@@ -24,6 +26,7 @@ def check_music(url):
         ydl_opts = {
         'outtmpl': '%(id)s.%(ext)s',
         'format': 'bestaudio/best',
+        'player_client':'default,-ios',
         'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
