@@ -27,6 +27,7 @@ async def check_music(url):
         'outtmpl': '%(id)s.%(ext)s',
         'format': 'bestaudio/best',
         'player_client':'default,-ios',
+        'cookiefile': 'cookies.txt',
         'postprocessors': [{
         'key': 'FFmpegExtractAudio',
         'preferredcodec': 'mp3',
